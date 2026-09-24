@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.itsmemoral.cinemabooking.dto.CreateHallRequest;
 import ru.itsmemoral.cinemabooking.dto.HallResponse;
 import ru.itsmemoral.cinemabooking.entity.Hall;
+import ru.itsmemoral.cinemabooking.exception.HallAlreadyExistsException;
 import ru.itsmemoral.cinemabooking.repository.HallRepository;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class HallService {
     @Transactional
     public HallResponse create(CreateHallRequest request) {
         if (hallRepository.existsByName(request.name())) {
-            throw new IllegalStateException("Зал с названием '" + request.name() + "' уже существует");
+            throw new HallAlreadyExistsException(request.name());
         }
         Hall hall = hallRepository.save(new Hall(request.name(), request.rowsCount(), request.seatsPerRow()));
         return HallResponse.from(hall);
